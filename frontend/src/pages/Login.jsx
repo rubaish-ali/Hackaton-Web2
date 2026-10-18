@@ -32,7 +32,7 @@ export default function Login() {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        "https://hackaton-web-sooty.vercel.app/api/auth/login",
         {
           email: form.email.trim().toLowerCase(),
           password: form.password
