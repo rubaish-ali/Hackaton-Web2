@@ -1,194 +1,158 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 
-import axios from "axios";
-import toast from "react-hot-toast";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faLeaf,
-  faUserPlus
-} from "@fortawesome/free-solid-svg-icons";
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 
-export default function Signup() {
-  const navigate = useNavigate();
+import { Toaster } from "react-hot-toast";
 
-  const [loading, setLoading] = useState(false);
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: ""
-  });
+import Home from "./pages/Home";
+import AIChat from "./pages/AIchat";
+import Career from "./pages/Career.jsx";
+import About from "./pages/About";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ScamShield from "./pages/ScamShield";
 
-  function handleChange(e) {
-    const { name, value } = e.target;
+import "./index.css";
 
-    setForm((previous) => ({
-      ...previous,
-      [name]: value
-    }));
+function isLoggedIn() {
+  return Boolean(
+    sessionStorage.getItem("authToken") &&
+    sessionStorage.getItem("user")
+  );
+}
+
+function ProtectedRoute({ children }) {
+  const location = useLocation();
+
+  if (!isLoggedIn()) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: location }}
+      />
+    );
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  return children;
+}
 
-    if (form.password.length < 8) {
-      toast.error(
-        "Password must be at least 8 characters."
-      );
-      return;
-    }
-
-    if (form.password !== form.confirmPassword) {
-      toast.error("Passwords do not match.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const { data } = await axios.post(
-        "https://hackaton-web-sooty.vercel.app/api/auth/signup",
-        {
-          name: form.name.trim(),
-          email: form.email.trim().toLowerCase(),
-          password: form.password
-        }
-      );
-
-      toast.success(
-        data.message || "Account created successfully!"
-      );
-
-      navigate("/login", { replace: true });
-
-    } catch (error) {
-      console.error(
-        "Signup error:",
-        error.response?.data || error.message
-      );
-
-      toast.error(
-        error.response?.data?.message ||
-        "Signup failed. Please try again."
-      );
-
-    } finally {
-      setLoading(false);
-    }
+function PublicRoute({ children }) {
+  if (isLoggedIn()) {
+    return <Navigate to="/" replace />;
   }
+
+  return children;
+}
+
+function AppLayout() {
+  const location = useLocation();
+  const authenticated = isLoggedIn();
+
+  const isAuthPage = [
+    "/login",
+    "/signup",
+  ].includes(location.pathname);
 
   return (
-    <main className="auth-page">
-      <section className="auth-card">
-        <Link to="/signup" className="logo auth-logo">
-          <FontAwesomeIcon icon={faLeaf} />
+    <div className="app">
+      {authenticated && !isAuthPage && <Navbar />}
 
-          Nexora<span className="green">AI</span>
-        </Link>
+      <main>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
 
-        <div className="auth-icon">
-          <FontAwesomeIcon icon={faUserPlus} />
-        </div>
+          <Route
+            path="/ai-chat"
+            element={
+              <ProtectedRoute>
+                <AIChat />
+              </ProtectedRoute>
+            }
+          />
 
-        <h1>Create your account</h1>
+          <Route
+            path="/career"
+            element={
+              <ProtectedRoute>
+                <Career />
+              </ProtectedRoute>
+            }
+          />
 
-        <p className="auth-subtitle">
-          Join Nexora and explore new possibilities with AI.
-        </p>
+          <Route
+            path="/about"
+            element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            }
+          />
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="signup-name">
-              Full name
-            </label>
+          <Route
+            path="/scamshield"
+            element={
+              <ProtectedRoute>
+                <ScamShield />
+              </ProtectedRoute>
+            }
+          />
 
-            <input
-              id="signup-name"
-              name="name"
-              type="text"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Enter your name"
-              maxLength={80}
-              autoComplete="name"
-              required
-            />
-          </div>
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
 
-          <div className="form-group">
-            <label htmlFor="signup-email">
-              Email address
-            </label>
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <Signup />
+              </PublicRoute>
+            }
+          />
 
-            <input
-              id="signup-email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              autoComplete="email"
-              required
-            />
-          </div>
+          <Route
+            path="*"
+            element={<Navigate to="/login" replace />}
+          />
+        </Routes>
+      </main>
 
-          <div className="form-group">
-            <label htmlFor="signup-password">
-              Password
-            </label>
+      {authenticated && !isAuthPage && <Footer />}
+    </div>
+  );
+}
 
-            <input
-              id="signup-password"
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="At least 8 characters"
-              minLength={8}
-              maxLength={128}
-              autoComplete="new-password"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="signup-confirm-password">
-              Confirm password
-            </label>
-
-            <input
-              id="signup-confirm-password"
-              name="confirmPassword"
-              type="password"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              placeholder="Re-enter your password"
-              minLength={8}
-              maxLength={128}
-              autoComplete="new-password"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="primary-button full-button"
-            disabled={loading}
-          >
-            {loading
-              ? "Creating account..."
-              : "Create Account"}
-          </button>
-        </form>
-
-        <p className="auth-switch">
-          Already have an account?{" "}
-          <Link to="/login">Log in</Link>
-        </p>
-      </section>
-    </main>
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+        }}
+      />
+      <AppLayout />
+    </BrowserRouter>
   );
 }
