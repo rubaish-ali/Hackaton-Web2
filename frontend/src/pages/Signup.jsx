@@ -50,7 +50,7 @@ export default function Signup() {
 
     try {
       const { data } = await axios.post(
-        "https://hackaton-bk2lrtcnx-danger-rubs-projects.vercel.app/api/auth/signup",
+        "https://hackaton-web-sooty.vercel.app/api/auth/signup",
         {
           name: form.name.trim(),
           email: form.email.trim().toLowerCase(),
