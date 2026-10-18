@@ -6,7 +6,7 @@ import Footer from "./components/Footer";
 
 import Home from "./pages/Home";
 import AIChat from "./pages/AIchat";
-import Career from "./pages/career";
+import Career from "./pages/Career.jsx";
 import About from "./pages/About";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
