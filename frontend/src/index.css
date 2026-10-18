@@ -5809,6 +5809,45 @@ select:focus-visible {
   color: #061a22 !important;
 }
 
+.nav-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.nav-user-name {
+  color: #20d6c2;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nav-actions .nav-button {
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-user-name {
+    font-size: 13px;
+  }
+}
+
 /* ==========================================
    ANIMATIONS
 ========================================== */
@@ -6647,5 +6686,658 @@ select:focus-visible {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* =====================================================
+   NEXORA — ALL PAGES RESPONSIVE POLISH
+   Appended styles: preserves existing dark navy + teal theme
+===================================================== */
+
+:root {
+  --nx-bg: #08121f;
+  --nx-surface: #101e2d;
+  --nx-surface-2: #0b1926;
+  --nx-text: #eaf5f6;
+  --nx-muted: #9aafbf;
+  --nx-teal: #20d6c2;
+  --nx-border: #243746;
+  --nx-radius: 18px;
+  --nx-shadow: 0 16px 45px rgba(0, 0, 0, 0.22);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  background: var(--nx-bg);
+  color: var(--nx-text);
+}
+
+#root,
+.app {
+  min-height: 100vh;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+}
+
+.app>main {
+  flex: 1;
+  width: 100%;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--nx-teal);
+  outline-offset: 3px;
+}
+
+/* Navbar and navigation */
+.navbar,
+.nav,
+.site-navbar,
+header.navbar {
+  position: relative;
+  z-index: 20;
+}
+
+.navbar a,
+.nav a,
+.site-navbar a {
+  transition: color .2s ease, background .2s ease;
+}
+
+.navbar a:hover,
+.nav a:hover,
+.site-navbar a:hover {
+  color: var(--nx-teal);
+}
+
+.navbar button,
+.nav button,
+.site-navbar button {
+  cursor: pointer;
+}
+
+/* Shared page width and spacing */
+.home-page,
+.about-page,
+.ai-chat-page,
+.chat-page,
+.login-page,
+.signup-page,
+.auth-page,
+.scamshield-page,
+.career-page,
+.resume-page,
+.contact-page {
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.home-page,
+.about-page,
+.contact-page {
+  width: min(100% - 40px, 1200px);
+  margin-inline: auto;
+}
+
+.home-page section,
+.about-page section,
+.contact-page section {
+  min-width: 0;
+}
+
+/* Shared headings and readable text */
+.home-page h1,
+.about-page h1,
+.ai-chat-page h1,
+.chat-page h1,
+.login-page h1,
+.signup-page h1,
+.auth-page h1,
+.contact-page h1 {
+  color: var(--nx-text);
+  line-height: 1.15;
+  letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+}
+
+.home-page p,
+.about-page p,
+.contact-page p,
+.ai-chat-page p,
+.chat-page p {
+  line-height: 1.8;
+}
+
+.home-page a,
+.about-page a,
+.contact-page a {
+  text-underline-offset: 4px;
+}
+
+/* Shared cards across Home, About, AI Chat, Career, and results */
+.feature-card,
+.home-card,
+.about-card,
+.stat-card,
+.info-card,
+.chat-card,
+.message-card,
+.ai-card,
+.result-card,
+.contact-card {
+  min-width: 0;
+  border: 1px solid var(--nx-border);
+  border-radius: var(--nx-radius);
+  background: linear-gradient(145deg, rgba(16, 30, 45, .98), rgba(9, 22, 34, .98));
+  box-shadow: var(--nx-shadow);
+  overflow-wrap: anywhere;
+}
+
+.feature-card,
+.home-card,
+.about-card,
+.stat-card,
+.info-card {
+  transition: border-color .25s ease, transform .25s ease;
+}
+
+.feature-card:hover,
+.home-card:hover,
+.about-card:hover,
+.info-card:hover {
+  border-color: rgba(32, 214, 194, .45);
+  transform: translateY(-3px);
+}
+
+/* Buttons: safe generic polish without overriding specific layout */
+.primary-button,
+.secondary-button,
+.cta-button,
+.submit-button,
+button.primary,
+button.secondary {
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+
+.primary-button:hover:not(:disabled),
+.cta-button:hover:not(:disabled),
+.submit-button:hover:not(:disabled),
+button.primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+  box-shadow: 0 8px 25px rgba(32, 214, 194, .16);
+}
+
+.primary-button:active:not(:disabled),
+.cta-button:active:not(:disabled),
+.submit-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* Forms: login, signup, career, contact and AI tools */
+.login-page form,
+.signup-page form,
+.auth-page form,
+.contact-page form {
+  width: 100%;
+}
+
+.login-page label,
+.signup-page label,
+.auth-page label,
+.contact-page label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--nx-text);
+  font-size: .9rem;
+  font-weight: 650;
+}
+
+.login-page input,
+.signup-page input,
+.auth-page input,
+.contact-page input,
+.contact-page textarea,
+.contact-page select,
+.ai-chat-page textarea,
+.chat-page textarea {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.login-page input:focus,
+.signup-page input:focus,
+.auth-page input:focus,
+.contact-page input:focus,
+.contact-page textarea:focus,
+.contact-page select:focus {
+  border-color: var(--nx-teal);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(32, 214, 194, .10);
+}
+
+.login-page a,
+.signup-page a,
+.auth-page a {
+  color: var(--nx-teal);
+}
+
+.error-message,
+.auth-error {
+  overflow-wrap: anywhere;
+}
+
+/* AI Chat layout and conversation */
+.ai-chat-page,
+.chat-page {
+  width: min(100% - 32px, 1000px);
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 60px) 0;
+}
+
+.chat-messages,
+.messages-container,
+.chat-history {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.user-message,
+.assistant-message,
+.message,
+.chat-message {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.ai-chat-page textarea,
+.chat-page textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--nx-border);
+  border-radius: 12px;
+  background: #091625;
+  color: var(--nx-text);
+  padding: 14px;
+  line-height: 1.7;
+}
+
+.ai-chat-page textarea:focus,
+.chat-page textarea:focus {
+  border-color: var(--nx-teal);
+  outline: none;
+}
+
+/* ScamShield page */
+.scamshield-page {
+  width: 100%;
+  min-height: 75vh;
+  padding: clamp(30px, 5vw, 60px) 16px 80px;
+  color: var(--nx-text);
+  background: radial-gradient(circle at 50% 0%, rgba(32, 214, 194, .07), transparent 42%);
+}
+
+.scamshield-hero {
+  max-width: 760px;
+  margin: 0 auto 34px;
+  text-align: center;
+}
+
+.scamshield-logo {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--nx-teal);
+  border-radius: 18px;
+  color: var(--nx-teal);
+  background: #102b38;
+  font-size: 26px;
+}
+
+.scamshield-eyebrow {
+  color: var(--nx-teal);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+}
+
+.scamshield-hero h1 {
+  margin: 14px 0;
+  color: var(--nx-text);
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  line-height: 1.12;
+}
+
+.scamshield-hero h1 span {
+  color: var(--nx-teal);
+}
+
+.scamshield-hero p,
+.scamshield-muted {
+  color: var(--nx-muted);
+  line-height: 1.8;
+}
+
+.scamshield-hero p {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.scamshield-card,
+.scamshield-results {
+  width: min(100%, 800px);
+  box-sizing: border-box;
+  margin: 0 auto 24px;
+  padding: clamp(18px, 4vw, 30px);
+  border: 1px solid var(--nx-border);
+  border-radius: 20px;
+  background: var(--nx-surface);
+  box-shadow: var(--nx-shadow);
+}
+
+.scamshield-card h2,
+.scamshield-result-top h2 {
+  margin: 0 0 12px;
+  color: var(--nx-text);
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+}
+
+.scamshield-card h2 svg,
+.scamshield-result-block h3 svg {
+  color: var(--nx-teal);
+}
+
+.scamshield-card form {
+  margin-top: 24px;
+}
+
+.scamshield-card label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--nx-text);
+  font-weight: 700;
+}
+
+.scamshield-card textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 170px;
+  padding: 15px;
+  resize: vertical;
+  border: 1px solid #29485b;
+  border-radius: 12px;
+  outline: none;
+  background: #081521;
+  color: var(--nx-text);
+  font: inherit;
+  line-height: 1.7;
+}
+
+.scamshield-card textarea:focus {
+  border-color: var(--nx-teal);
+  box-shadow: 0 0 0 3px rgba(32, 214, 194, .1);
+}
+
+.scamshield-card textarea::placeholder {
+  color: #71879a;
+}
+
+.scamshield-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 15px;
+  color: var(--nx-muted);
+  font-size: 12px;
+}
+
+.scamshield-form-footer button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 10px;
+  color: #06151d;
+  background: var(--nx-teal);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.scamshield-form-footer button:hover:not(:disabled) {
+  background: #56eddb;
+}
+
+.scamshield-form-footer button:disabled {
+  opacity: .55;
+}
+
+.scamshield-privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-top: 20px;
+  padding: 14px;
+  border: 1px solid #203a4b;
+  border-radius: 10px;
+  color: var(--nx-muted);
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.scamshield-privacy svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--nx-teal);
+}
+
+.scamshield-loading {
+  margin: 20px auto;
+  color: var(--nx-teal);
+  text-align: center;
+}
+
+.scamshield-result-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--nx-border);
+}
+
+.scamshield-risk {
+  padding: 8px 12px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.risk-low {
+  color: #65e5b2;
+  background: rgba(101, 229, 178, .1);
+}
+
+.risk-medium {
+  color: #ffd166;
+  background: rgba(255, 209, 102, .1);
+}
+
+.risk-high {
+  color: #ff8585;
+  background: rgba(255, 133, 133, .1);
+}
+
+.scamshield-result-block {
+  padding: 20px 0;
+  border-bottom: 1px solid #203747;
+}
+
+.scamshield-result-block h3 {
+  margin: 0 0 12px;
+  color: var(--nx-text);
+  font-size: 1rem;
+}
+
+.scamshield-result-block p,
+.scamshield-result-block li,
+.scamshield-disclaimer {
+  color: #b1c1cf;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.scamshield-result-block ul {
+  padding-left: 22px;
+}
+
+.scamshield-result-block li {
+  margin: 5px 0;
+}
+
+.scamshield-disclaimer {
+  margin: 18px 0 0;
+  font-size: 12px;
+}
+
+/* Footer: keep the existing footer design but improve wrapping */
+footer,
+.footer {
+  min-width: 0;
+}
+
+.footer-links,
+.footer-bottom {
+  flex-wrap: wrap;
+}
+
+.footer a {
+  text-underline-offset: 4px;
+}
+
+/* Tables and long AI output */
+pre,
+code {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+pre {
+  overflow-x: auto;
+}
+
+table {
+  max-width: 100%;
+}
+
+/* Responsive layout for all pages */
+@media (max-width: 900px) {
+
+  .career-grid,
+  .resume-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-page,
+  .about-page,
+  .contact-page {
+    width: min(100% - 32px, 1200px);
+  }
+}
+
+@media (max-width: 600px) {
+
+  .home-page,
+  .about-page,
+  .contact-page {
+    width: min(100% - 28px, 1200px);
+  }
+
+  .scamshield-page {
+    padding: 32px 12px 55px;
+  }
+
+  .scamshield-card,
+  .scamshield-results {
+    border-radius: 15px;
+  }
+
+  .scamshield-form-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .scamshield-form-footer button {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .scamshield-result-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .footer-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
   }
 }

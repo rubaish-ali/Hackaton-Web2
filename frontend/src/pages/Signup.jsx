@@ -1,30 +1,33 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import axios from "axios";
 import toast from "react-hot-toast";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLeaf,
-  faUserPlus,
+  faUserPlus
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function Signup() {
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    confirmPassword: ""
   });
 
   function handleChange(e) {
     const { name, value } = e.target;
 
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
+    setForm((previous) => ({
+      ...previous,
+      [name]: value
     }));
   }
 
@@ -32,13 +35,15 @@ export default function Signup() {
     e.preventDefault();
 
     if (form.password.length < 8) {
-      return toast.error(
+      toast.error(
         "Password must be at least 8 characters."
       );
+      return;
     }
 
     if (form.password !== form.confirmPassword) {
-      return toast.error("Passwords do not match.");
+      toast.error("Passwords do not match.");
+      return;
     }
 
     setLoading(true);
@@ -49,13 +54,16 @@ export default function Signup() {
         {
           name: form.name.trim(),
           email: form.email.trim().toLowerCase(),
-          password: form.password,
+          password: form.password
         }
       );
 
-      toast.success(data.message || "Account created successfully!");
+      toast.success(
+        data.message || "Account created successfully!"
+      );
 
-      navigate("/login");
+      navigate("/login", { replace: true });
+
     } catch (error) {
       console.error(
         "Signup error:",
@@ -63,8 +71,10 @@ export default function Signup() {
       );
 
       toast.error(
-        error.response?.data?.message || "Signup failed."
+        error.response?.data?.message ||
+        "Signup failed. Please try again."
       );
+
     } finally {
       setLoading(false);
     }
@@ -73,8 +83,9 @@ export default function Signup() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link to="/" className="logo auth-logo">
+        <Link to="/signup" className="logo auth-logo">
           <FontAwesomeIcon icon={faLeaf} />
+
           Nexora<span className="green">AI</span>
         </Link>
 
@@ -85,15 +96,17 @@ export default function Signup() {
         <h1>Create your account</h1>
 
         <p className="auth-subtitle">
-          Join us and explore new possibilities with AI.
+          Join Nexora and explore new possibilities with AI.
         </p>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="name">Full name</label>
+            <label htmlFor="signup-name">
+              Full name
+            </label>
 
             <input
-              id="name"
+              id="signup-name"
               name="name"
               type="text"
               value={form.name}
@@ -106,7 +119,9 @@ export default function Signup() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="signup-email">Email address</label>
+            <label htmlFor="signup-email">
+              Email address
+            </label>
 
             <input
               id="signup-email"
@@ -121,7 +136,9 @@ export default function Signup() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="signup-password">Password</label>
+            <label htmlFor="signup-password">
+              Password
+            </label>
 
             <input
               id="signup-password"
@@ -138,12 +155,12 @@ export default function Signup() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirm-password">
+            <label htmlFor="signup-confirm-password">
               Confirm password
             </label>
 
             <input
-              id="confirm-password"
+              id="signup-confirm-password"
               name="confirmPassword"
               type="password"
               value={form.confirmPassword}
@@ -161,7 +178,9 @@ export default function Signup() {
             className="primary-button full-button"
             disabled={loading}
           >
-            {loading ? "Creating account..." : "Create Account"}
+            {loading
+              ? "Creating account..."
+              : "Create Account"}
           </button>
         </form>
 

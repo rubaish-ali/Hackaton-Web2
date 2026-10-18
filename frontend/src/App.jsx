@@ -1,42 +1,145 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import ScamShield from "./pages/ScamShield";
+
 import Home from "./pages/Home";
 import AIChat from "./pages/AIchat";
 import Career from "./pages/career";
 import About from "./pages/About";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ScamShield from "./pages/ScamShield";
 
 import "./index.css";
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Toaster position="top-right" />
-
-      <div className="app">
-        <Navbar />
-
-        <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/ai-chat" element={<AIChat />} />
-            <Route path="/career" element={<Career />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/scamshield" element={<ScamShield />} />
-          </Routes>
-        </main>
-
-        <Footer />
-      </div>
-    </BrowserRouter>
+function isLoggedIn() {
+  return Boolean(
+    sessionStorage.getItem("authToken") &&
+    sessionStorage.getItem("user")
   );
 }
 
-export default App;
+function ProtectedRoute({ children }) {
+  const location = useLocation();
+
+  if (!isLoggedIn()) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: location }}
+      />
+    );
+  }
+
+  return children;
+}
+
+function PublicRoute({ children }) {
+  if (isLoggedIn()) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
+
+function AppLayout() {
+  const location = useLocation();
+
+  const isAuthPage =
+    location.pathname === "/login" ||
+    location.pathname === "/signup";
+
+  const authenticated = isLoggedIn();
+
+  return (
+    <div className="app">
+      {authenticated && !isAuthPage && <Navbar />}
+
+      <main>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/ai-chat"
+            element={
+              <ProtectedRoute>
+                <AIChat />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/career"
+            element={
+              <ProtectedRoute>
+                <Career />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/about"
+            element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/scamshield"
+            element={
+              <ProtectedRoute>
+                <ScamShield />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <Signup />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="*"
+            element={<Navigate to="/login" replace />}
+          />
+        </Routes>
+      </main>
+
+      {authenticated && !isAuthPage && <Footer />}
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Toaster position="top-right" />
+      <AppLayout />
+    </BrowserRouter>
+  );
+}

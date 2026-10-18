@@ -1,8 +1,8 @@
+
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import {
   faShieldHalved,
   faMagnifyingGlass,
@@ -11,7 +11,9 @@ import {
   faLock,
 } from "@fortawesome/free-solid-svg-icons";
 
-const API_URL = "http://localhost:5000/api/scamshield/analyze";
+
+
+const API_BASE_URL = "https://hackaton-web-sooty.vercel.app";
 
 export default function ScamShield() {
   const [message, setMessage] = useState("");
@@ -24,7 +26,7 @@ export default function ScamShield() {
     const cleanMessage = message.trim();
 
     if (!cleanMessage) {
-      toast.error("Suspicious message paste karo.");
+      toast.error("Please enter a message to analyze.");
       return;
     }
 
@@ -33,20 +35,15 @@ export default function ScamShield() {
 
     try {
       const response = await axios.post(
-        API_URL,
+        `${API_BASE_URL}/api/scamshield/analyze`,
         { message: cleanMessage },
-        {
-          timeout: 40000,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        { timeout: 65000 }
       );
 
-      const data = response.data;
-      const result = data?.analysis;
+      const result = response.data?.analysis;
 
       if (
+        !response.data?.success ||
         !result ||
         !["Low", "Medium", "High"].includes(result.riskLevel) ||
         typeof result.summary !== "string" ||
@@ -54,58 +51,34 @@ export default function ScamShield() {
         !Array.isArray(result.verificationSteps) ||
         typeof result.disclaimer !== "string"
       ) {
-        throw new Error("AI analysis ka response incomplete hai.");
+        throw new Error("The AI returned an incomplete analysis.");
       }
 
       setAnalysis(result);
-      toast.success("Analysis complete aur MongoDB mein save ho gaya.");
+      toast.success("Analysis completed successfully.");
     } catch (error) {
-      console.error("ScamShield frontend error:", error);
+      console.error("ScamShield error:", error);
 
-      let errorMessage =
+      const message =
         error.response?.data?.message ||
-        "Scam analysis failed. Backend terminal check karo.";
+        (error.code === "ECONNABORTED"
+          ? "Request timed out. Please try again."
+          : "Could not connect to the backend. Check the API URL and CORS settings.");
 
-      if (
-        error.code === "ECONNABORTED" ||
-        error.code === "ETIMEDOUT"
-      ) {
-        errorMessage =
-          "Request timeout ho gayi. Backend terminal check karo.";
-      } else if (
-        error.code === "ERR_NETWORK" ||
-        error.message === "Network Error"
-      ) {
-        errorMessage =
-          "Backend se connection nahi ho raha. Port 5000 check karo.";
-      }
-
-      // Add save status only once.
-      if (
-        error.response?.data?.saved === true &&
-        !/prompt.*mongo\s*db.*save|mongo\s*db.*save/i.test(errorMessage)
-      ) {
-        errorMessage += " Prompt MongoDB mein save hai.";
-      }
-
-      toast.error(errorMessage, { duration: 6000 });
+      toast.error(message, { duration: 6000 });
     } finally {
       setLoading(false);
     }
   }
 
-  const riskClass = analysis
-    ? `risk-${analysis.riskLevel.toLowerCase()}`
-    : "";
-
   return (
-    <main className="scamshield-page">
-      <section className="scamshield-heading">
-        <div className="scamshield-icon">
+    <div className="scamshield-page">
+      <section className="scamshield-hero">
+        <div className="scamshield-logo">
           <FontAwesomeIcon icon={faShieldHalved} />
         </div>
 
-        <span className="section-eyebrow">
+        <span className="scamshield-eyebrow">
           NEXORA SECURITY TOOL
         </span>
 
@@ -114,35 +87,35 @@ export default function ScamShield() {
         </h1>
 
         <p>
-          Suspicious emails, SMS messages, and invoices ko
-          analyze karo aur possible warning signs samjho.
+          Check suspicious messages for potential warning signs
+          and learn how to verify them safely.
         </p>
       </section>
 
       <section className="scamshield-card">
         <h2>
           <FontAwesomeIcon icon={faMagnifyingGlass} />
-          {" "}Check a suspicious message
+          {" "}Analyze a message
         </h2>
 
         <p className="scamshield-muted">
-          Message paste karo. Analysis ke liye links open nahi kiye jayenge.
+          Paste the text of a suspicious email, SMS, or invoice.
         </p>
 
         <form onSubmit={handleAnalyze}>
-          <label htmlFor="scamshield-message">
-            Email, SMS, or invoice text
+          <label htmlFor="scam-message">
+            Message text
           </label>
 
           <textarea
-            id="scamshield-message"
+            id="scam-message"
             value={message}
             onChange={(event) => setMessage(event.target.value)}
-            placeholder="Example: Your account will be suspended. Pay immediately..."
+            placeholder="Paste your suspicious message here..."
             maxLength={12000}
             rows={8}
-            disabled={loading}
             required
+            disabled={loading}
           />
 
           <div className="scamshield-form-footer">
@@ -161,16 +134,16 @@ export default function ScamShield() {
         <div className="scamshield-privacy">
           <FontAwesomeIcon icon={faLock} />
           <span>
-            Submitted messages and analysis results are stored in the
-            project database. Passwords, PINs, verification codes, or
-            private financial information submit mat karo.
+            Submitted messages are stored in the project database.
+            Do not submit passwords, PINs, verification codes, or
+            private financial information.
           </span>
         </div>
       </section>
 
       {loading && (
         <div className="scamshield-loading" aria-live="polite">
-          Gemini is checking the message for potential warning signs...
+          Groq AI is checking the message for potential warning signs...
         </div>
       )}
 
@@ -182,7 +155,9 @@ export default function ScamShield() {
               <h2>Message Analysis</h2>
             </div>
 
-            <span className={`scamshield-risk ${riskClass}`}>
+            <span
+              className={`scamshield-risk risk-${analysis.riskLevel.toLowerCase()}`}
+            >
               {analysis.riskLevel} Risk
             </span>
           </div>
@@ -198,7 +173,7 @@ export default function ScamShield() {
               {" "}Potential warning signs
             </h3>
 
-            {analysis.warningSigns.length ? (
+            {analysis.warningSigns.length > 0 ? (
               <ul>
                 {analysis.warningSigns.map((item, index) => (
                   <li key={`${index}-${item}`}>{item}</li>
@@ -215,26 +190,26 @@ export default function ScamShield() {
               {" "}Verification checklist
             </h3>
 
-            {analysis.verificationSteps.length ? (
-              <ul className="scamshield-checklist">
+            {analysis.verificationSteps.length > 0 ? (
+              <ul>
                 {analysis.verificationSteps.map((item, index) => (
                   <li key={`${index}-${item}`}>{item}</li>
                 ))}
               </ul>
             ) : (
               <p>
-                Verify the message independently through an official
-                channel before taking action.
+                Verify the message through an official channel
+                before taking action.
               </p>
             )}
           </div>
 
           <p className="scamshield-disclaimer">
-            {analysis.disclaimer} AI results are not proof that a message
-            is genuine or fraudulent. Verify independently.
+            {analysis.disclaimer} AI results are not proof that a
+            message is genuine or fraudulent. Verify independently.
           </p>
         </section>
       )}
-    </main>
+    </div>
   );
 }

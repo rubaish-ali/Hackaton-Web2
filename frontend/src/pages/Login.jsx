@@ -1,24 +1,33 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useLocation
+} from "react-router-dom";
+
 import axios from "axios";
 import toast from "react-hot-toast";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLeaf,
-  faRightToBracket,
+  faRightToBracket
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     email: "",
-    password: "",
+    password: ""
   });
 
   async function handleSubmit(e) {
     e.preventDefault();
+
     setLoading(true);
 
     try {
@@ -26,20 +35,39 @@ export default function Login() {
         "http://localhost:5000/api/auth/login",
         {
           email: form.email.trim().toLowerCase(),
-          password: form.password,
+          password: form.password
         }
       );
 
       if (!data.token || !data.user) {
-        throw new Error("Invalid login response from server.");
+        throw new Error(
+          "Login response must include token and user."
+        );
       }
 
-      sessionStorage.setItem("authToken", data.token);
-      sessionStorage.setItem("user", JSON.stringify(data.user));
+      sessionStorage.setItem(
+        "authToken",
+        data.token
+      );
 
-      toast.success(data.message || "Login successful!");
+      sessionStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
 
-      navigate("/");
+      window.dispatchEvent(
+        new Event("auth-change")
+      );
+
+      toast.success(
+        data.message || "Login successful!"
+      );
+
+      const destination =
+        location.state?.from?.pathname || "/";
+
+      navigate(destination, { replace: true });
+
     } catch (error) {
       console.error(
         "Login error:",
@@ -47,8 +75,10 @@ export default function Login() {
       );
 
       toast.error(
-        error.response?.data?.message || "Login failed."
+        error.response?.data?.message ||
+        "Login failed. Check your email and password."
       );
+
     } finally {
       setLoading(false);
     }
@@ -57,8 +87,9 @@ export default function Login() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <Link to="/" className="logo auth-logo">
+        <Link to="/login" className="logo auth-logo">
           <FontAwesomeIcon icon={faLeaf} />
+
           Nexora<span className="green">AI</span>
         </Link>
 
@@ -69,12 +100,14 @@ export default function Login() {
         <h1>Welcome back</h1>
 
         <p className="auth-subtitle">
-          Log in to continue your journey with NexoraAI. Access your account and explore our features seamlessly.
+          Log in to continue your journey with NexoraAI.
         </p>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="login-email">Email address</label>
+            <label htmlFor="login-email">
+              Email address
+            </label>
 
             <input
               id="login-email"
@@ -85,7 +118,7 @@ export default function Login() {
               onChange={(e) =>
                 setForm({
                   ...form,
-                  email: e.target.value,
+                  email: e.target.value
                 })
               }
               required
@@ -93,7 +126,9 @@ export default function Login() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="login-password">Password</label>
+            <label htmlFor="login-password">
+              Password
+            </label>
 
             <input
               id="login-password"
@@ -104,7 +139,7 @@ export default function Login() {
               onChange={(e) =>
                 setForm({
                   ...form,
-                  password: e.target.value,
+                  password: e.target.value
                 })
               }
               required
