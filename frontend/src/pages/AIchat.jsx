@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -10,7 +11,8 @@ import {
   faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-const API_URL = "http://localhost:5000/api/chat";
+// Deployed Nexora backend URL
+const API_URL = "https://hackaton-web-sooty.vercel.app/api/chat";
 
 const suggestions = [
   "How can we reduce plastic waste?",
@@ -40,7 +42,6 @@ export default function AIChat() {
       return;
     }
 
-    // Prepare the previous conversation for the backend.
     const previousHistory = history
       .filter(
         (item) =>
@@ -56,7 +57,6 @@ export default function AIChat() {
     setInput("");
     setLoading(true);
 
-    // Show the user's message immediately.
     setHistory((prev) => [
       ...prev,
       {
@@ -66,8 +66,6 @@ export default function AIChat() {
     ]);
 
     try {
-      console.log("Sending Nexora AI request...");
-
       const response = await axios.post(
         API_URL,
         {
@@ -75,8 +73,6 @@ export default function AIChat() {
           history: previousHistory,
         },
         {
-          // Backend timeout is 30 seconds.
-          // Frontend waits a little longer for the backend error.
           timeout: 40000,
           headers: {
             "Content-Type": "application/json",
@@ -88,11 +84,10 @@ export default function AIChat() {
 
       if (typeof reply !== "string" || !reply.trim()) {
         throw new Error(
+          response.data?.message ||
           "AI se valid jawab nahi mila. Backend response check karo."
         );
       }
-
-      console.log("Nexora AI response received.");
 
       setHistory((prev) => [
         ...prev,
@@ -106,20 +101,20 @@ export default function AIChat() {
 
       let errorMessage =
         error.response?.data?.message ||
-        "AI se connect nahi ho saka.";
+        "AI se connect nahi ho saka. Dobara try karo.";
 
       if (
         error.code === "ECONNABORTED" ||
         error.code === "ETIMEDOUT"
       ) {
         errorMessage =
-          "Request timeout ho gayi. Backend terminal mein Gemini API ka error check karo.";
+          "Request timeout ho gayi. Backend logs aur Gemini API configuration check karo.";
       } else if (
         error.code === "ERR_NETWORK" ||
         error.message === "Network Error"
       ) {
         errorMessage =
-          "Backend se connection nahi ho raha. Check karo ke server port 5000 par chal raha hai.";
+          "Backend tak request nahi pohanchi. Internet, backend URL aur CORS settings check karo.";
       } else if (!error.response && error.message) {
         errorMessage = error.message;
       }
@@ -148,8 +143,8 @@ export default function AIChat() {
         </div>
 
         <span className="section-eyebrow">
-          <FontAwesomeIcon icon={faLightbulb} />
-          {" "}NEXORA INTELLIGENCE
+          <FontAwesomeIcon icon={faLightbulb} />{" "}
+          NEXORA INTELLIGENCE
         </span>
 
         <h1>
@@ -206,20 +201,17 @@ export default function AIChat() {
           {history.map((item, index) => (
             <div
               key={`${index}-${item.role}`}
-              className={`message ${
-                item.role === "user"
+              className={`message ${item.role === "user"
                   ? "user-message"
                   : item.role === "error"
-                  ? "assistant-message error-message"
-                  : "assistant-message"
-              }`}
+                    ? "assistant-message error-message"
+                    : "assistant-message"
+                }`}
             >
               <div className="message-avatar">
                 <FontAwesomeIcon
                   icon={
-                    item.role === "user"
-                      ? faUser
-                      : faRobot
+                    item.role === "user" ? faUser : faRobot
                   }
                 />
               </div>
@@ -229,13 +221,11 @@ export default function AIChat() {
                   {item.role === "user"
                     ? "You"
                     : item.role === "error"
-                    ? "Connection Error"
-                    : "Nexora AI"}
+                      ? "Connection Error"
+                      : "Nexora AI"}
                 </strong>
 
-                <p className="message-text">
-                  {item.text}
-                </p>
+                <p className="message-text">{item.text}</p>
               </div>
             </div>
           ))}
